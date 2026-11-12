@@ -35,14 +35,28 @@ def _find_lib(*site_globs):
     return None
 
 
+def _system_lib(name):
+    """A system library the loader knows (ldconfig's cache), e.g. the image's GEOS: preferred
+    to a wheel's bundled copy, whose hashed sibling .so files aren't on the loader's path
+    (a `manage.py` command in a console, which doesn't run scripts/entrypoint.sh)."""
+    import ctypes.util
+    found = ctypes.util.find_library(name)
+    if not found or os.path.isabs(found):
+        return found
+    for d in ("/usr/lib/aarch64-linux-gnu", "/usr/lib/x86_64-linux-gnu", "/usr/lib", "/usr/local/lib"):
+        if os.path.exists(os.path.join(d, found)):
+            return os.path.join(d, found)
+    return None
+
+
 if not os.getenv("GDAL_LIBRARY_PATH"):
-    _gdal = _find_lib("fiona/.dylibs/libgdal*.dylib", "pyogrio/.dylibs/libgdal*.dylib",
+    _gdal = _system_lib("gdal") or _find_lib("fiona/.dylibs/libgdal*.dylib", "pyogrio/.dylibs/libgdal*.dylib",
                       "fiona*.so", "*/libgdal.so*")
     if _gdal:
         GDAL_LIBRARY_PATH = _gdal
 
 if not os.getenv("GEOS_LIBRARY_PATH"):
-    _geos = _find_lib("shapely/.dylibs/libgeos_c*.dylib", "shapely*/libgeos_c*",
+    _geos = _system_lib("geos_c") or _find_lib("shapely/.dylibs/libgeos_c*.dylib", "shapely*/libgeos_c*",
                       "Shapely.libs/libgeos_c*.so*", "shapely/.libs/libgeos_c*.so*")
     if _geos:
         GEOS_LIBRARY_PATH = _geos
