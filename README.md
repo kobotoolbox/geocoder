@@ -12,6 +12,7 @@ A self-hosted geocoding service backed by [OCHA COD-AB](https://cod.unocha.org/)
 - **Interactive map** — country selector, map-click to geocode, boundary level filter
 - **XLSForm download** — per-country KoboCollect form with cascading admin-boundary `select_one` questions (and health zones where available), generated from the DB
 - **Admin-boundary CSV lists** — per-country, per-level `.csv` endpoints (the XLSForm choices) for use as KoboToolbox external choice lists, with optional per-user/project translation columns (`label::Spanish (es)`, …)
+- **P-code crosswalks** — another set of codes for a country's places (a response's form, a government list, an older COD) matched to the COD-AB P-codes: by code, by name within the parent, close names to confirm, the rest set by hand; served as JSON/CSV ([docs/crosswalks.md](docs/crosswalks.md))
 - **Token auth + rate limiting** — DRF token authentication with per-scope request throttling; users managed via the Django admin
 - **React SPA** — frontend built with React 19, TypeScript, and [Mantine](https://mantine.dev/) v9
 - **REST API** — all endpoints return JSON; interactive OpenAPI docs at `/api/docs/`
@@ -35,6 +36,7 @@ The backend is a Django project (`config/`) with apps under `apps/`:
 | `apps.geo` | GeoDjango models for the boundary tables, read/data endpoints (`/countries`, `*.geojson`, `/xlsform`), spatial resolvers |
 | `apps.geocoding` | `/geocode`, `/geocode_single`, `/reverse_geocode` (Google API + P-code resolution) |
 | `apps.accounts` | Token auth (`/api/token`, `/api/me`) and the `ensure_superuser` bootstrap command |
+| `apps.crosswalks` | P-code crosswalks: other sets of codes matched to the boundaries (`/api/crosswalks`, `/crosswalks/…`; docs/crosswalks.md) |
 | `apps.boundary_csv` | Per-country admin-boundary `.csv` lists (`/boundaries/…`) + the boundary-CSV project/translation-column management API |
 | `apps.core` | `/health`, `/api/cache/clear`, and the SPA catch-all |
 
@@ -444,6 +446,8 @@ the boundary DB. The geo/data endpoints (`/countries`, `*.geojson`, `/xlsform`, 
 boundary CSV serve, etc.) remain public. All endpoints are **rate-limited** (per-scope
 throttling); the single-lookup geocoding endpoints have a tighter `geocode` scope, and
 batch upload a `batch` scope.
+
+**P-code crosswalks** (`/api/crosswalks`, `/crosswalks/<iso2>/<key>.json|.csv`): see [docs/crosswalks.md](docs/crosswalks.md).
 
 ### `GET /countries` — public
 

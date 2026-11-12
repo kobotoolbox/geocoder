@@ -18,6 +18,7 @@ from rest_framework.routers import DefaultRouter
 from apps.accounts import views as accounts_views
 from apps.boundary_csv import views as boundary_csv_views
 from apps.core import views as core_views
+from apps.crosswalks import views as crosswalk_views
 from apps.geo import views as geo_views
 from apps.geocoding import views as geocoding_views
 
@@ -57,6 +58,13 @@ urlpatterns = [
         boundary_csv_views.BoundaryCsvDefaultExportView.as_view(),
     ),
 
+    # --- P-code crosswalks (docs/crosswalks.md) ---
+    path("api/crosswalks", crosswalk_views.crosswalks),
+    re_path(r"^api/crosswalks/(?P<iso2>[A-Za-z]{2})/(?P<key>[-a-zA-Z0-9_]+)/entries/(?P<code>[^/]+)$",
+            crosswalk_views.crosswalk_entry),
+    re_path(r"^crosswalks/(?P<iso2>[A-Za-z]{2})/(?P<key>[-a-zA-Z0-9_]+)\.(?P<fmt>json|csv)$",
+            crosswalk_views.crosswalk_export),
+
     # --- Geocoding ---
     path("geocode", geocoding_views.geocode),                   # GET (single) + POST (batch)
     path("geocode_single", geocoding_views.geocode_single),
@@ -85,6 +93,6 @@ urlpatterns = [
 # redirect to /admin/ instead of being swallowed by the SPA.
 urlpatterns += [
     re_path(r"^(?!admin(/|$)|api/|countries|boundaries\.geojson|secondary_boundaries\.geojson|"
-            r"boundaries/|xlsform|geocode|geocode_single|reverse_geocode|health|static/)(?P<path>.*)$",
+            r"boundaries/|crosswalks/|xlsform|geocode|geocode_single|reverse_geocode|health|static/)(?P<path>.*)$",
             core_views.serve_spa),
 ]

@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.core",
     "apps.boundary_csv",
+    "apps.crosswalks",
 ]
 
 # Django's SecurityMiddleware defaults SECURE_REFERRER_POLICY to "same-origin",

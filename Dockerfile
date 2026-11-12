@@ -73,6 +73,7 @@ COPY --chown=appuser:appuser manage.py .
 COPY --chown=appuser:appuser config/ ./config/
 COPY --chown=appuser:appuser apps/ ./apps/
 COPY --chown=appuser:appuser scripts/ ./scripts/
+COPY --chown=appuser:appuser crosswalks/ ./crosswalks/
 COPY --chown=appuser:appuser db/ ./db/
 RUN chmod +x scripts/entrypoint.sh scripts/ingest_job.sh
 
