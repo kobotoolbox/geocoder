@@ -25,6 +25,8 @@ staticfiles/
 *.csv
 *.geojson
 !addresses.csv
+# a crosswalk's source codes (docs/crosswalks.md)
+!crosswalks/*.csv
 data/
 tmp/
 *.zip
