@@ -10,7 +10,9 @@ python-dotenv
 openpyxl
 gunicorn
 psycopg2-binary
-sqlalchemy
+# 2.1 maps postgresql:// to psycopg (v3), which isn't installed: the ingest job's
+# create_engine fails (the deploy of 2026-11-12). psycopg2 it is, as everywhere else
+sqlalchemy>=2.0,<2.1
 fiona
 hdx-python-api
 pytest
